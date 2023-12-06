@@ -2,9 +2,9 @@ from operator import itemgetter
 
 data = open("day5data.txt", "r")
 lines = data.read().splitlines()
-text, seeds = lines[0].split(":")
-SEEDS = [int(x) for x in seeds.split()]
-lines = [line for line in lines[1:] if line]
+# text, seeds = lines[0].split(":")
+# SEEDS = [int(x) for x in seeds.split()]
+# lines = [line for line in lines[1:] if line]
 
 
 def create_list_of_data():
@@ -13,6 +13,7 @@ def create_list_of_data():
     for line in lines[1:]:
         if line[0].isnumeric():
             nums = [int(x) for x in line.split()]
+            print(nums)
             map.append(nums)
         else:
             maps.append(map.copy())
@@ -52,14 +53,14 @@ def get_map_from_list(list):
     return map
 
 
-(seed_to_soil,
- soil_to_fertilizer,
- fertilizer_to_water,
- water_to_light,
- light_to_temp,
- temp_to_humidity,
- humidity_to_location) = create_list_of_data()  # create_maps()
-print("created lists!")
+# (seed_to_soil,
+#  soil_to_fertilizer,
+#  fertilizer_to_water,
+#  water_to_light,
+#  light_to_temp,
+#  temp_to_humidity,
+#  humidity_to_location) = create_list_of_data()  # create_maps()
+# print("created lists!")
 
 
 def lookup_map(num, map):
@@ -67,7 +68,7 @@ def lookup_map(num, map):
         dest, source, range_num = line
         if source <= num <= (source + range_num - 1):
             diff = num - source
-            return dest + diff
+            return dest + diff # dest + num - source
     return num
 
 
@@ -160,6 +161,6 @@ def get_seeds_with_ranges():
 
 
 # seeds_with_ranges = get_seeds_with_ranges()
-humidity_to_location = sorted(humidity_to_location, key=itemgetter(0))
-print(find_lowest_location())
+#humidity_to_location = sorted(humidity_to_location, key=itemgetter(0))
+#print(find_lowest_location())
 # print("SEEDS: ", SEEDS)
