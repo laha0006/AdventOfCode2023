@@ -55,7 +55,7 @@ def check_adj_symbol_digit(digit):
         for y in range(len(offsets_y)):
             offset_x = min(max((offsets_x[x] + digit[1]), 0), 139)
             offset_y = min(max((offsets_y[y] + digit[0]), 0), 139)
-            adj = lines_input[offset_y][offset_x]
+            adj = GLOBAL_NUMBERS[offset_y][offset_x]
             if not adj.isnumeric() and adj != ".":
                 # print("adj: ", adj)
                 return True
