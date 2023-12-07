@@ -10,18 +10,18 @@ DIST = [int(x) for x in rest.split()]
 ONE_DIST = int(rest.strip().replace(" ", ""))
 print("ONE_DIST ", ONE_DIST)
 
-# def calc_num_win_strats(race):
-#     time = TIME[race]
-#     dist = DIST[race]
-#
-#     win = 0
-#     for i in range(time+1):
-#         speed = i
-#         time_left = time - i
-#         dist_travelled = speed * time_left
-#         if dist_travelled >= dist:
-#             win += 1
-#     return win
+def calc_num_win_strats(race):
+    time = TIME[race]
+    dist = DIST[race]
+
+    win = 0
+    for i in range(time+1):
+        speed = i
+        time_left = time - i
+        dist_travelled = speed * time_left
+        if dist_travelled >= dist:
+            win += 1
+    return win
 
 
 # A = 1
