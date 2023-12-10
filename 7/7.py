@@ -165,3 +165,7 @@ print(total)
 # # print(f(test2))
 # # print(f(test3))
 # # print(f(test4))
+
+def test():
+    return 1,2
+print(type(test()))
