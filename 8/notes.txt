@@ -1,0 +1,18 @@
+lookup chinese remainder theorem
+...
+...
+In mathematics you can tell a lot from remainders. For instance, using the number 2 you can tell if any number is odd or even by its remainder when you divide by two; 0 and the number is even, 1 and the number is odd.
+
+And another thing, if you do not know the number, but you know the remainder, so it has a remainder of 6 when divided by 9, then you know that the number must be something like 6, 6 + 9, 6 + 18, 6 + 27, ... it has to be 6 + "multiple of 9".
+
+The Chinese remainder theorem is a theorem that tells you how to find a number that satisfies a bunch of these remainder properties at one time.
+
+something like
+
+remainder of 6 when divided by 9
+
+remainder of 13 when divided by 20
+
+remainder of 46 when divided by 77
+
+what is the number?
