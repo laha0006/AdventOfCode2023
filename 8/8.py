@@ -24,7 +24,7 @@ for line in lines:
 start = "AAA"
 
 
-def traverse_list_nodes(runTwice):
+def traverse_list_nodes():
     global starts
     global ends
     steps = []
@@ -81,8 +81,16 @@ def traverse_nodes(target):
 # print(traverse_nodes("ZZZ"))
 #since they loop, we can find lcm.
 #print(loop_test("AAA"))
-# steps = traverse_list_nodes()
-# print(lcm(steps[0], steps[1], steps[2], steps[3], steps[4], steps[5], ))
+steps = traverse_list_nodes()
+print(steps)
+ins = len(instructions)
+print(ins)
+print([x/ins for x in steps])
+
+print(ins*36445519589)
+print(lcm(steps[0], steps[1], steps[2], steps[3], steps[4], steps[5], ))
+
+print(lcm(steps[0], steps[1], steps[2], steps[3], steps[4], steps[5], ) % 36445519589)
 
 
 # 4 steps
