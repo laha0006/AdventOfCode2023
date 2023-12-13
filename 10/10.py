@@ -1,6 +1,6 @@
 from operator import itemgetter
 
-data = open("example2.txt", "r")
+data = open("day10data.txt", "r")
 lines = data.read().splitlines()
 
 connections = {"n": {"|": ["F", "/", "|"],
@@ -72,7 +72,7 @@ def get_connections(pipe_coord):
                 # PATH.append((add_y,add_x))
         elif cur_pipe in connections[direction]:
             #             print("direction: ", direction)
-            #print("elif cur pipe: ", cur_pipe)
+            # print("elif cur pipe: ", cur_pipe)
             #             print("connections[direction] ", connections[direction])
             y_offset = offsets[direction][0]
             x_offset = offsets[direction][1]
@@ -88,7 +88,7 @@ def get_connections(pipe_coord):
             if (add_y, add_x) not in PATH:
                 #                 print("add to path!")
                 connections_found.append((add_y, add_x))
-                #print("add")
+                # print("add")
                 break
     # PATH.append((add_y,add_x))
     return connections_found
@@ -96,21 +96,23 @@ def get_connections(pipe_coord):
 
 def find_all():
     curr_pos = find_start()
-    #print("curr pos", curr_pos)
+    # print("curr pos", curr_pos)
     count = 0
     while curr_pos not in PATH:
         # print("count: ", count)
         # # print(get_connections(curr_pos))
         if len(curr_pos) > 1:
-#             print("len > 1")
-#             print("currpos: ", curr_pos)
+            #             print("len > 1")
+            #             print("currpos: ", curr_pos)
             curr_pos = get_connections(curr_pos[0])
         else:
             curr_pos = get_connections(curr_pos[0])
-#         print(curr_pos)
+        #         print(curr_pos)
         count += 1
         if not curr_pos:
             return count
+
+
 #         print("cur pos: ", curr_pos)
 
 def find_area():
@@ -129,9 +131,10 @@ def find_edges():
         edges_i = [xy for xy in PATH if xy[0] == i]
         min_x_edge = min(edges_i, key=itemgetter(1))
         max_x_edge = max(edges_i, key=itemgetter(1))
-        min_max_edges = [min_x_edge,max_x_edge]
+        min_max_edges = [min_x_edge, max_x_edge]
         edges.append(min_max_edges)
     return edges
+
 
 def find_diff(edges):
     sum = 0
@@ -139,6 +142,81 @@ def find_diff(edges):
         diff = edge[1][1] - edge[0][1]
         sum += diff
     return sum
+
+
+def find_walls():
+    walls = []
+    for i in range(len(lines)):
+        walls_i = []
+        print("path: ", PATH)
+        edges_i = [yx for yx in PATH if yx[0] == i]
+        edges_i = sorted(edges_i, key=itemgetter(1))
+        print("edge_i: " ,edges_i)
+        if not edges_i:
+            continue
+        first = edges_i[0]
+        last = first
+        # print("i : ", i)
+        # print("edges_i: ", edges_i)
+        for edge in edges_i:
+            #             print("edge: ", edge)
+            #             print("last: ", last)
+            if edge == first:
+                continue
+            if (last[1] + 1) == edge[1]:
+                #                 print("wall building")
+                last = edge
+                wall = (first[1], last[1])
+            else:
+                # print("else: ", edge)
+                wall = (first[1], last[1])
+#                 print("wall: ", wall)
+                walls_i.append(wall)
+                first = edge
+                last = first
+
+        #                 print(wall)
+        walls_i.append(wall)
+        walls.append(walls_i)
+    return walls
+
+
+def find_enclosed(walls):
+    enclosed = 0
+    paint = 0
+    i = 1
+    last_wall = walls[0]
+    top_wall = walls[0]
+    while i < len(walls):
+        wall_segment = walls[i]
+        #10,19
+        #8,12 , 14,19
+        if len(wall_segment) > 1:
+            # print("i :", i)
+            # print("len: ", len(wall_segment))
+            for x in range(len(wall_segment)//2):
+                first_wall = wall_segment[x+x]           # 0+0,1+1,2+2    = 0, 2,4
+                second_wall = wall_segment[x+x+1]        # 0+0+1,1+1+1,  = 1,3,5
+                diff = second_wall[0] - first_wall[1] - 1
+                # print("##### first_wall[1] >= top_wall[0][0] #####")
+                # print("fw[1]: ", first_wall[1])
+                # print("tw[0][0]: ", top_wall[0][0])
+                # print("sw[1]", second_wall[0])
+                # print("tw[0][1]", top_wall[0][1])
+                if first_wall[1] >= top_wall[0][0] and second_wall[0] <= top_wall[0][1]:
+#                     print("fw: ", first_wall)
+#                     print("sw: ", second_wall)
+                    enclosed += diff
+
+        last_wall = walls[i]
+        i += 1
+    return enclosed
+
+
+
+
+
+
 
 
 
@@ -168,9 +246,14 @@ def find_diff(edges):
 # print(get_connections((y , x)))
 # print(PATH)
 
-print(find_all())
-edges = find_edges()
-print(find_diff(edges))
+print(find_all()/2)
+#edges = find_edges()
+#print(find_diff(edges))
+
+walls = find_walls()
+print("walls: ", walls)
+print(find_enclosed(walls))
+#find_area()
 # print(PATH)
-# find_area()
+#find_area()
 # print(len(PATH))
