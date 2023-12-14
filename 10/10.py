@@ -148,10 +148,10 @@ def find_walls():
     walls = []
     for i in range(len(lines)):
         walls_i = []
-        print("path: ", PATH)
+        #print("path: ", PATH)
         edges_i = [yx for yx in PATH if yx[0] == i]
         edges_i = sorted(edges_i, key=itemgetter(1))
-        print("edge_i: " ,edges_i)
+        #print("edge_i: " ,edges_i)
         if not edges_i:
             continue
         first = edges_i[0]
@@ -189,20 +189,12 @@ def find_enclosed(walls):
     top_wall = walls[0]
     while i < len(walls):
         wall_segment = walls[i]
-        #10,19
-        #8,12 , 14,19
         if len(wall_segment) > 1:
-            # print("i :", i)
-            # print("len: ", len(wall_segment))
+
             for x in range(len(wall_segment)//2):
                 first_wall = wall_segment[x+x]           # 0+0,1+1,2+2    = 0, 2,4
                 second_wall = wall_segment[x+x+1]        # 0+0+1,1+1+1,  = 1,3,5
                 diff = second_wall[0] - first_wall[1] - 1
-                # print("##### first_wall[1] >= top_wall[0][0] #####")
-                # print("fw[1]: ", first_wall[1])
-                # print("tw[0][0]: ", top_wall[0][0])
-                # print("sw[1]", second_wall[0])
-                # print("tw[0][1]", top_wall[0][1])
                 if first_wall[1] >= top_wall[0][0] and second_wall[0] <= top_wall[0][1]:
 #                     print("fw: ", first_wall)
 #                     print("sw: ", second_wall)
@@ -253,7 +245,7 @@ print(find_all()/2)
 walls = find_walls()
 print("walls: ", walls)
 print(find_enclosed(walls))
-#find_area()
+find_area()
 # print(PATH)
 #find_area()
 # print(len(PATH))
