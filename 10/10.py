@@ -3,6 +3,7 @@ from operator import itemgetter
 data = open("day10data.txt", "r")
 lines = data.read().splitlines()
 
+
 connections = {"n": {"|": ["F", "/", "|"],
                      "L": ["|", "7", "F"],
                      "J": ["|", "7", "F"]},
@@ -29,6 +30,9 @@ def find_start():
                 return [(y, x)]
             x += 1
         y += 1
+
+
+
 
 
 def find_loop_length():
@@ -183,25 +187,41 @@ def find_walls():
 
 def find_enclosed(walls):
     enclosed = 0
-    paint = 0
-    i = 1
-    last_wall = walls[0]
-    top_wall = walls[0]
+    top_wall = []
+    i = 0
     while i < len(walls):
-        wall_segment = walls[i]
-        if len(wall_segment) > 1:
-
-            for x in range(len(wall_segment)//2):
-                first_wall = wall_segment[x+x]           # 0+0,1+1,2+2    = 0, 2,4
-                second_wall = wall_segment[x+x+1]        # 0+0+1,1+1+1,  = 1,3,5
-                diff = second_wall[0] - first_wall[1] - 1
-                if first_wall[1] >= top_wall[0][0] and second_wall[0] <= top_wall[0][1]:
-#                     print("fw: ", first_wall)
-#                     print("sw: ", second_wall)
-                    enclosed += diff
-
-        last_wall = walls[i]
+        start = 0
+        end = 0
+        print("i :", i)
+        print("len walls: ", len(walls))
+        for wall in walls[i]:
+            print("wall: ", wall)
+            print("top wall: ", top_wall)
+            if not top_wall:
+                print(wall)
+                top_wall.append(wall)
+            else:
+                for tw in top_wall:
+                    print("tw: ", tw)
+                    tw_min_x,tw_max_x = tw
+                    w_min_x,w_max_x = wall
+                    if w_min_x < tw_min_x and w_max_x < tw_max_x:
+                        top_wall.append(wall)
+                    elif w_min_x < tw_min_x < w_max_x:
+                        tw = w_min_x, tw[1]
+                    elif tw_min_x < w_min_x <= tw_max_x:
+                        tw = tw[0], w_max_x
+                    elif w_min_x > tw_min_x and w_max_x > tw_max_x:
+                        top_wall.append(wall)
+                    else:
+                        continue
+        print("add 1")
         i += 1
+    print("top wall below vvvv")
+    print(top_wall)
+    print("hej")
+
+
     return enclosed
 
 
@@ -242,10 +262,14 @@ print(find_all()/2)
 #edges = find_edges()
 #print(find_diff(edges))
 
-walls = find_walls()
-print("walls: ", walls)
-print(find_enclosed(walls))
+# walls = find_walls()
+# print("walls: ", walls)
+# print(find_enclosed(walls))
 find_area()
 # print(PATH)
 #find_area()
 # print(len(PATH))
+
+| -> x|x
+     x|xm
+     x|x
