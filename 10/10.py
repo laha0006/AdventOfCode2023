@@ -1,8 +1,8 @@
 from operator import itemgetter
+import timeit
 
-data = open("day10data.txt", "r")
+data = open("enclosed4.txt", "r")
 lines = data.read().splitlines()
-
 
 connections = {"n": {"|": ["F", "/", "|"],
                      "L": ["|", "7", "F"],
@@ -17,9 +17,189 @@ connections = {"n": {"|": ["F", "/", "|"],
                      "J": ["-", "F", "L"],
                      "7": ["-", "F", "L"]}}
 
+conns = {"s": ["|", "L", "J"],
+         "n": ["|", "7", "F"],
+         "w": ["-", "F", "L"],
+         "e": ["-", "J", "7"]}
+dirs = {"|": ["n", "s"],
+        "-": ["e", "w"],
+        "7": ["s", "w"],
+        "F": ["s", "e"],
+        "L": ["n", "e"],
+        "J": ["n", "w"]}
+infer_pipes = {
+    "ns": "|",
+    "ne": "L",
+    "nw": "J",
+    "sn": "|",
+    "se": "F",
+    "sw": "7",
+    "en": "L",
+    "ew": "-",
+    "es": "F",
+    "wn": "J",
+    "ws": "7",
+    "we": "-"
+}
+
 PATH = []
 
 
+def get_start_and_replace_with_pipe():
+    x = 0
+    y = 0
+    for line in lines:
+        x = 0
+        for c in line:
+            if c == "S":
+                start_pipe = infer_start_pipe((y, x))
+                # print(start_pipe)
+                replace_with_pipe((y, x), start_pipe)
+                return y, x
+            x += 1
+        y += 1
+
+
+def infer_start_pipe(start_pos):
+    y, x = start_pos
+    offsets = [(-1, 0, "n"), (1, 0, "s"), (0, 1, "e"), [0, -1, "w"]]
+    directions = ""
+    for offset in offsets:
+        new_y = y + offset[0]
+        new_x = x + offset[1]
+        direction = offset[2]
+        if new_y >= len(lines) or new_y < 0:
+            # print("offset: ", offset)
+            continue
+        if new_x >= len(lines[0]) or new_x < 0:
+            # print("offset: ", offset)
+            continue
+        pipe = lines[new_y][new_x]
+        # print("direction: ", direction)
+        # print("new_pipe", pipe)
+        # print("conns[direction]", conns[direction])
+        if pipe in conns[direction]:
+            # print("added")
+            directions += direction
+    return infer_pipes[directions]
+
+
+def replace_with_pipe(start_pos, pipe):
+    y, x = start_pos
+    list_string = list(lines[y])
+    list_string[x] = pipe
+    lines[y] = "".join(list_string)
+
+
+# print(get_start_and_replace_with_pipe())
+
+def find_pipe_loop():
+    global conns
+    global PATH
+    global lines
+    offsets = {"n": (-1, 0),
+               "s": (1, 0),
+               "e": (0, 1),
+               "w": (0, -1)}
+    direction_offsets = {"n": "s",
+                         "s": "n",
+                         "e": "w",
+                         "w": "e"}
+
+    start_pos = get_start_and_replace_with_pipe()
+    y, x = start_pos
+    prev_pipe = lines[y][x]
+    direction = dirs[prev_pipe][0]
+    while start_pos not in PATH:
+        off_y, off_x = offsets[direction]
+        y = y + off_y
+        x = x + off_x
+        PATH.append((y, x))
+        next_pipe = lines[y][x]
+        dir_one = dirs[next_pipe][0]
+        dir_two = dirs[next_pipe][1]
+        dir_from = direction_offsets[direction]
+        direction = dir_one if dir_one != dir_from else dir_two
+
+
+def find_enclosed():
+    new_lines = []
+    for i in range(0, len(lines)):
+        line_i = [yx for yx in PATH if yx[0] == i]
+        if line_i:
+            line_i.sort(key=itemgetter(1))
+            new_lines.append(line_i)
+    toggle = {"|": True,
+              "-": False,
+              "7": True,
+              "F": True,
+              "J": True,
+              "L": True,
+              }
+    corner = ["J", "L", "7", "F"]
+    in_out_corner = {"J": []}
+    enclosed = 0
+    for line in new_lines:
+        inside = False
+        last_corner = False
+        start = 0
+        end = 0
+        print("line: ", line)
+        for coord in line:
+            print("------")
+            y, x = coord
+            print("coord: ", coord)
+            pipe = lines[y][x]
+            print("pipe ", pipe)
+            print("inside: ", inside)
+            print("start: ", start)
+            if pipe == "-":
+                print("--cont.")
+                start = x
+                continue
+            if inside:
+                if pipe in corner and last_corner:
+                    if x > start+1:
+                        print("--add")
+                        diff = x - start
+                        diff -= 1
+                        print("--diff: ", diff)
+                        enclosed += diff
+                        inside = False
+                    else:
+                        start = x
+                    continue
+                else:
+                    if x > start+1:
+                        print("--we're inside!!")
+                        print("--coord", coord)
+                        print("--pipe", pipe)
+                        end = x
+                        diff = end - start
+                        enclosed += diff
+                        print("--enclosed", enclosed)
+                        inside = False
+                    else:
+                        start = x
+                        inside = False
+            else:
+                print("--else.")
+                inside = toggle[pipe]
+                if pipe in corner:
+                    last_corner = True
+                    last_pipe = pipe
+                start = x
+    return enclosed
+
+
+start_time = timeit.default_timer()
+find_pipe_loop()
+print(len(PATH) / 2)
+print("time: ", timeit.default_timer() - start_time)
+print(find_enclosed())
+
+
+## OLD
 def find_start():
     x = 0
     y = 0
@@ -30,9 +210,6 @@ def find_start():
                 return [(y, x)]
             x += 1
         y += 1
-
-
-
 
 
 def find_loop_length():
@@ -152,10 +329,10 @@ def find_walls():
     walls = []
     for i in range(len(lines)):
         walls_i = []
-        #print("path: ", PATH)
+        # print("path: ", PATH)
         edges_i = [yx for yx in PATH if yx[0] == i]
         edges_i = sorted(edges_i, key=itemgetter(1))
-        #print("edge_i: " ,edges_i)
+        # print("edge_i: " ,edges_i)
         if not edges_i:
             continue
         first = edges_i[0]
@@ -174,7 +351,7 @@ def find_walls():
             else:
                 # print("else: ", edge)
                 wall = (first[1], last[1])
-#                 print("wall: ", wall)
+                #                 print("wall: ", wall)
                 walls_i.append(wall)
                 first = edge
                 last = first
@@ -203,8 +380,8 @@ def find_enclosed(walls):
             else:
                 for tw in top_wall:
                     print("tw: ", tw)
-                    tw_min_x,tw_max_x = tw
-                    w_min_x,w_max_x = wall
+                    tw_min_x, tw_max_x = tw
+                    w_min_x, w_max_x = wall
                     if w_min_x < tw_min_x and w_max_x < tw_max_x:
                         top_wall.append(wall)
                     elif w_min_x < tw_min_x < w_max_x:
@@ -221,16 +398,7 @@ def find_enclosed(walls):
     print(top_wall)
     print("hej")
 
-
     return enclosed
-
-
-
-
-
-
-
-
 
 #       0 1 2 3 4
 #     0 # P P P #
@@ -257,19 +425,17 @@ def find_enclosed(walls):
 # y, x = start_connections[0]
 # print(get_connections((y , x)))
 # print(PATH)
-
-print(find_all()/2)
-#edges = find_edges()
-#print(find_diff(edges))
+# PATH = []
+# start_time = timeit.default_timer()
+# print(find_all()/2)
+# print("time: ", timeit.default_timer() - start_time)
+# edges = find_edges()
+# print(find_diff(edges))
 
 # walls = find_walls()
 # print("walls: ", walls)
 # print(find_enclosed(walls))
-find_area()
+# find_area()
 # print(PATH)
-#find_area()
+# find_area()
 # print(len(PATH))
-
-| -> x|x
-     x|xm
-     x|x
