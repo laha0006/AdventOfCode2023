@@ -141,6 +141,7 @@ def find_enclosed():
             # print("y: ", y)
             # print("x: ", x)
             # print("pipe: ", pipe)
+            #solution heavily inspired / taken from: https://github.com/Yarin78/advent-of-code/blob/master/src/year2023/day10.py
             if (y,x) in PATH and (pipe == "J" or pipe == "L" or pipe == "|"):
                 inside = not inside
 #             print("inside: ", inside)
