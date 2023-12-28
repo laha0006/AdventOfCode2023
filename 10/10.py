@@ -1,8 +1,9 @@
 from operator import itemgetter
 import timeit
 
-data = open("enclosed4.txt", "r")
+data = open("example2.txt", "r")
 lines = data.read().splitlines()
+
 
 connections = {"n": {"|": ["F", "/", "|"],
                      "L": ["|", "7", "F"],
@@ -129,74 +130,36 @@ def find_enclosed():
         if line_i:
             line_i.sort(key=itemgetter(1))
             new_lines.append(line_i)
-    toggle = {"|": True,
-              "-": False,
-              "7": True,
-              "F": True,
-              "J": True,
-              "L": True,
-              }
-    corner = ["J", "L", "7", "F"]
-    in_out_corner = {"J": []}
+
     enclosed = 0
-    for line in new_lines:
+
+    for y in range(len(lines)):
         inside = False
-        last_corner = False
-        start = 0
-        end = 0
-        print("line: ", line)
-        for coord in line:
-            print("------")
-            y, x = coord
-            print("coord: ", coord)
+        for x in range(0, len(lines[y])):
             pipe = lines[y][x]
-            print("pipe ", pipe)
-            print("inside: ", inside)
-            print("start: ", start)
-            if pipe == "-":
-                print("--cont.")
-                start = x
-                continue
-            if inside:
-                if pipe in corner and last_corner:
-                    if x > start+1:
-                        print("--add")
-                        diff = x - start
-                        diff -= 1
-                        print("--diff: ", diff)
-                        enclosed += diff
-                        inside = False
-                    else:
-                        start = x
-                    continue
-                else:
-                    if x > start+1:
-                        print("--we're inside!!")
-                        print("--coord", coord)
-                        print("--pipe", pipe)
-                        end = x
-                        diff = end - start
-                        enclosed += diff
-                        print("--enclosed", enclosed)
-                        inside = False
-                    else:
-                        start = x
-                        inside = False
-            else:
-                print("--else.")
-                inside = toggle[pipe]
-                if pipe in corner:
-                    last_corner = True
-                    last_pipe = pipe
-                start = x
+            # print("----")
+            # print("y: ", y)
+            # print("x: ", x)
+            # print("pipe: ", pipe)
+            if (y,x) in PATH and (pipe == "J" or pipe == "L" or pipe == "|"):
+                inside = not inside
+#             print("inside: ", inside)
+            enclosed += (y,x) not in PATH and inside
+#             print("enclosed: ", enclosed)
+
     return enclosed
 
 
 start_time = timeit.default_timer()
 find_pipe_loop()
-print(len(PATH) / 2)
-print("time: ", timeit.default_timer() - start_time)
-print(find_enclosed())
+#print(len(PATH) / 2)
+#print("time: ", timeit.default_timer() - start_time)
+# print("4 excepted: ", 4 == find_enclosed())
+LAST_GUESS = 876
+guess = find_enclosed()
+print(guess)
+print(guess < LAST_GUESS)
+
 
 
 ## OLD
@@ -400,6 +363,7 @@ def find_enclosed(walls):
 
     return enclosed
 
+
 #       0 1 2 3 4
 #     0 # P P P #
 #     1 P P # P P
@@ -437,5 +401,5 @@ def find_enclosed(walls):
 # print(find_enclosed(walls))
 # find_area()
 # print(PATH)
-# find_area()
+#find_area()
 # print(len(PATH))
